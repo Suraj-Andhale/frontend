@@ -81,3 +81,68 @@ spec:
           failureThreshold: 30
   strategy:
     type: Recreate
+-------------------------------------------------------------------
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telnet-server
+  namespace: devops-admin
+  labels:
+    app: telnet-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telnet-server
+  template:
+    metadata:
+      labels:
+        app: telnet-server
+    spec:
+      securityContext:
+        runAsUser: 1001
+        fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: telnet-server
+        image: registry.dev.sbiepay.sbi:8443/library/telnet-server:v1  # custom image with xinetd+telnetd
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+          runAsUser: 1001
+          runAsGroup: 1001
+        ports:
+        - containerPort: 2323
+        command: ["/usr/sbin/xinetd"]
+        args: ["-stayalive", "-dontfork"]
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+        livenessProbe:
+          tcpSocket:
+            port: 2323
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          tcpSocket:
+            port: 2323
+          initialDelaySeconds: 10
+          periodSeconds: 15
+        startupProbe:
+          tcpSocket:
+            port: 2323
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          failureThreshold: 30
+  strategy:
+    type: Recreate
