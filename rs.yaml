@@ -161,3 +161,19 @@ CMD ["/usr/sbin/xinetd", "-stayalive", "-dontfork"]
 STEP 1/6: FROM registry.access.redhat.com/ubi9/ubi-minimal
 Trying to pull registry.access.redhat.com/ubi9/ubi-minimal:latest...
 Error: creating build container: initializing source docker://registry.access.redhat.com/ubi9/ubi-minimal:latest: pinging container registry registry.access.redhat.com: Get "https://registry.access.redhat.com/v2/": dial tcp: lookup registry.access.redhat.com on 10.189.53.150:53: no such host
+\
+
+\
+
+
+
+[osuser@bastion Suraj]$ vi Dockerfile
+[osuser@bastion Suraj]$ podman build -t registry.dev.sbiepay.sbi:8443/library/busybox:v2 .
+STEP 1/6: FROM registry.dev.sbiepay.sbi:8443/library/busybox:v1
+STEP 2/6: RUN yum install -y xinetd telnet-server && yum clean all
+WARN[0000] Failed to mount subscriptions, skipping entry in /usr/share/containers/mounts.conf: getting host subscription data: failed to read subscriptions from "/usr/share/rhel/secrets": open /usr/share/rhel/secrets/redhat.repo: permission denied
+/bin/sh: yum: not found
+Error: building at STEP "RUN yum install -y xinetd telnet-server && yum clean all": while running runtime: exit status 127
+[osuser@bastion Suraj]$ apt
+bash: apt: command not found...
+Failed to search for file: /mnt/BaseOS was not found
