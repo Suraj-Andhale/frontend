@@ -144,3 +144,11 @@ telnet-service           ClusterIP   172.30.123.39    <none>        2323/TCP   4
 txn-transactionservice   ClusterIP   172.30.216.132   <none>        9081/TCP   140d
 [osuser@bastion ~]$ oc describe deploy telnet-server
 
+
+
+
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  3m4s  deployment-controller  Scaled up replica set telnet-server-bbf4ccfb5 to 1
+[osuser@bastion ~]$
