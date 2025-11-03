@@ -98,3 +98,49 @@ spec:
     port: 2323
     targetPort: 2323
   type: ClusterIP
+
+
+
+
+
+
+
+
+
+
+
+
+
+  -----------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+  [osuser@bastion ~]$ oc apply -f telnet-server-deploy.yaml
+Warning: would violate PodSecurity "restricted:v1.24": runAsNonRoot != true (pod or container "telnet-server" must set securityContext.runAsNonRoot=true)
+deployment.apps/telnet-server created
+service/telnet-service created
+[osuser@bastion ~]$ oc get deploy
+NAME            READY   UP-TO-DATE   AVAILABLE   AGE
+telnet-server   0/1     0            0           11s
+[osuser@bastion ~]$ oc get po
+No resources found in devops-admin namespace.
+[osuser@bastion ~]$ oc get cm
+NAME                       DATA   AGE
+istio-ca-root-cert         1      144d
+kube-root-ca.crt           1      145d
+openshift-service-ca.crt   1      145d
+txn-config                 1      140d
+[osuser@bastion ~]$ oc get svc
+NAME                     TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+telnet-service           ClusterIP   172.30.123.39    <none>        2323/TCP   40s
+txn-transactionservice   ClusterIP   172.30.216.132   <none>        9081/TCP   140d
+[osuser@bastion ~]$ oc describe deploy telnet-server
+
