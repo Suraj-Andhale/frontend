@@ -152,3 +152,12 @@ COPY xinetd.conf /etc/xinetd.conf
 
 EXPOSE 2323
 CMD ["/usr/sbin/xinetd", "-stayalive", "-dontfork"]
+
+
+
+
+ vi Dockerfile
+[osuser@bastion Suraj]$ podman build -t registry.dev.sbiepay.sbi:8443/library/busybox:v2 .
+STEP 1/6: FROM registry.access.redhat.com/ubi9/ubi-minimal
+Trying to pull registry.access.redhat.com/ubi9/ubi-minimal:latest...
+Error: creating build container: initializing source docker://registry.access.redhat.com/ubi9/ubi-minimal:latest: pinging container registry registry.access.redhat.com: Get "https://registry.access.redhat.com/v2/": dial tcp: lookup registry.access.redhat.com on 10.189.53.150:53: no such host
