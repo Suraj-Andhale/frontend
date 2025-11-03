@@ -140,3 +140,15 @@ NAME                           READY   STATUS             RESTARTS      AGE
 telnet-server-89cdb6cd-tvmvg   0/1     CrashLoopBackOff   5 (21s ago)   3m12s
 [osuser@bastion ~]$
 
+
+
+
+
+FROM registry.access.redhat.com/ubi9/ubi-minimal
+RUN microdnf install -y xinetd telnet-server && microdnf clean all
+
+COPY telnetd.conf /etc/xinetd.d/telnet
+COPY xinetd.conf /etc/xinetd.conf
+
+EXPOSE 2323
+CMD ["/usr/sbin/xinetd", "-stayalive", "-dontfork"]
