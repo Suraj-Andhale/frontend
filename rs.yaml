@@ -10,3 +10,111 @@ Events:
   ----     ------        ----                    ----                   -------
   Warning  FailedCreate  4m19s (x17 over 9m27s)  replicaset-controller  Error creating: pods "telnet-server-5d65985748-" is forbidden: unable to validate against any security context constraint: [provider "anyuid": Forbidden: not usable by user or serviceaccount, provider "spark-scc": Forbidden: not usable by user or serviceaccount, provider "trident-controller": Forbidden: not usable by user or serviceaccount, provider restricted-v2: .spec.securityContext.fsGroup: Invalid value: []int64{1001}: 1001 is not an allowed group, provider restricted-v2: .containers[0].runAsUser: Invalid value: 1001: must be in the ranges: [1001490000, 1001499999], provider "restricted": Forbidden: not usable by user or serviceaccount, provider "nonroot-v2": Forbidden: not usable by user or serviceaccount, provider "nonroot": Forbidden: not usable by user or serviceaccount, provider "spark-operator-scc": Forbidden: not usable by user or serviceaccount, provider "hostmount-anyuid": Forbidden: not usable by user or serviceaccount, provider "elasticsearch-scc": Forbidden: not usable by user or serviceaccount, provider "logging-scc": Forbidden: not usable by user or serviceaccount, provider "machine-api-termination-handler": Forbidden: not usable by user or serviceaccount, provider "hostnetwork-v2": Forbidden: not usable by user or serviceaccount, provider "hostnetwork": Forbidden: not usable by user or serviceaccount, provider "hostaccess": Forbidden: not usable by user or serviceaccount, provider "trident-node-linux": Forbidden: not usable by user or serviceaccount, provider "node-exporter": Forbidden: not usable by user or serviceaccount, provider "privileged": Forbidden: not usable by user or serviceaccount]
 [osuser@bastion ~]$
+
+
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telnet-server
+  namespace: devops-admin
+  labels:
+    app: telnet-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telnet-server
+  template:
+    metadata:
+      labels:
+        app: telnet-server
+    spec:
+      securityContext:
+        # ❌ Don't fix UID or fsGroup; let OpenShift assign automatically
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: telnet-server
+        image: alpine:3.19
+        command: ["sh", "-c"]
+        args:
+        - |
+          apk add --no-cache busybox-extras xinetd && \
+          mkdir -p /etc/xinetd.d && \
+          echo "service telnet
+          {
+              disable         = no
+              flags           = REUSE
+              socket_type     = stream
+              wait            = no
+              user            = nobody
+              server          = /usr/sbin/in.telnetd
+              log_on_failure  += USERID
+              port            = 2323
+          }" > /etc/xinetd.d/telnet && \
+          echo "defaults
+          {
+              log_type        = SYSLOG authpriv
+              log_on_failure  = HOST
+              log_on_success  = PID HOST EXIT DURATION
+          }
+          includedir /etc/xinetd.d" > /etc/xinetd.conf && \
+          echo "✅ Telnet server starting on port 2323..." && \
+          xinetd -stayalive -dontfork
+        ports:
+        - containerPort: 2323
+          name: telnet
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          capabilities:
+            drop: ["ALL"]
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+        livenessProbe:
+          tcpSocket:
+            port: 2323
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          tcpSocket:
+            port: 2323
+          initialDelaySeconds: 10
+          periodSeconds: 15
+        startupProbe:
+          tcpSocket:
+            port: 2323
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          failureThreshold: 30
+  strategy:
+    type: Recreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: telnet-service
+  namespace: devops-admin
+spec:
+  selector:
+    app: telnet-server
+  ports:
+  - name: telnet
+    protocol: TCP
+    port: 2323
+    targetPort: 2323
+  type: ClusterIP
