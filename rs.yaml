@@ -1,0 +1,12 @@
+[osuser@bastion ~]$ oc describe rs telnet-server-5d65985748
+.
+.
+.
+.
+
+
+Events:
+  Type     Reason        Age                     From                   Message
+  ----     ------        ----                    ----                   -------
+  Warning  FailedCreate  4m19s (x17 over 9m27s)  replicaset-controller  Error creating: pods "telnet-server-5d65985748-" is forbidden: unable to validate against any security context constraint: [provider "anyuid": Forbidden: not usable by user or serviceaccount, provider "spark-scc": Forbidden: not usable by user or serviceaccount, provider "trident-controller": Forbidden: not usable by user or serviceaccount, provider restricted-v2: .spec.securityContext.fsGroup: Invalid value: []int64{1001}: 1001 is not an allowed group, provider restricted-v2: .containers[0].runAsUser: Invalid value: 1001: must be in the ranges: [1001490000, 1001499999], provider "restricted": Forbidden: not usable by user or serviceaccount, provider "nonroot-v2": Forbidden: not usable by user or serviceaccount, provider "nonroot": Forbidden: not usable by user or serviceaccount, provider "spark-operator-scc": Forbidden: not usable by user or serviceaccount, provider "hostmount-anyuid": Forbidden: not usable by user or serviceaccount, provider "elasticsearch-scc": Forbidden: not usable by user or serviceaccount, provider "logging-scc": Forbidden: not usable by user or serviceaccount, provider "machine-api-termination-handler": Forbidden: not usable by user or serviceaccount, provider "hostnetwork-v2": Forbidden: not usable by user or serviceaccount, provider "hostnetwork": Forbidden: not usable by user or serviceaccount, provider "hostaccess": Forbidden: not usable by user or serviceaccount, provider "trident-node-linux": Forbidden: not usable by user or serviceaccount, provider "node-exporter": Forbidden: not usable by user or serviceaccount, provider "privileged": Forbidden: not usable by user or serviceaccount]
+[osuser@bastion ~]$
