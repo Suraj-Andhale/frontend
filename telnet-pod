@@ -1,1 +1,83 @@
-.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telnet-server
+  namespace: devops-admin
+  labels:
+    app: telnet-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telnet-server
+  template:
+    metadata:
+      labels:
+        app: telnet-server
+    spec:
+      securityContext:
+        runAsUser: 1001
+        fsGroup: 1001
+        seccompProfile:
+          type: "RuntimeDefault"
+      containers:
+      - name: telnet-server
+        image: registry.dev.sbiepay.sbi:8443/library/busybox:v1
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          runAsUser: 1001
+          runAsGroup: 1001
+        ports:
+        - containerPort: 23
+        command: ["sh", "-c"]
+        args:
+        - |
+          apk add --no-cache telnet-openbsd
+          mkdir -p /etc/xinetd.d
+          echo "service telnet
+          {
+              socket_type     = stream
+              protocol        = tcp
+              user            = nobody
+              wait            = no
+              server          = /usr/sbin/in.telnetd
+              server_args     = -debug
+              port            = 23
+          }" > /etc/xinetd.d/telnet
+          xinetd -stayalive -dontfork
+        volumeMounts:
+        - name: telnet-config
+          mountPath: /etc/xinetd.d/telnet
+          subPath: telnet
+        - name: xinetd-config
+          mountPath: /etc/xinetd.conf
+          subPath: xinetd.conf
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+        livenessProbe:
+          tcpSocket:
+            port: 23
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          failureThreshold: 3
+        readinessProbe:
+          tcpSocket:
+            port: 23
+          initialDelaySeconds: 10
+          periodSeconds: 15
+        startupProbe:
+          tcpSocket:
+            port: 23
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          failureThreshold: 30
+  strategy:
+    type: Recreate
