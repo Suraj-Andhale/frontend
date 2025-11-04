@@ -124,56 +124,29 @@ spec:
 
 
 
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: frontend-transactionfe
+  namespace: dev-frontend
+spec:
+  gateways:
+  - dev-istio-system/epay-dev-gateway
+  hosts:
+  - dev.epay.sbi
+  http:
+  - match:
+      - uri:
+          prefix: /ui/
+    route:
+      - destination:
+          host: transactionfe-transaction-frontend
+          port:
+            number: 8080
+        weight: 100
+      - destination:
+          host: maintenancefe-maintenance-frontend.dev-frontend.svc.cluster.local
+          port:
+            number: 8080
+        weight: 0
 
-
-  Events:
-  Type     Reason          Age                From               Message
-  ----     ------          ----               ----               -------
-  Normal   Scheduled       38s                default-scheduler  Successfully assigned devops-admin/telnet-server-89cdb6cd-tvmvg to worker1.uat.epay.sbi
-  Normal   AddedInterface  39s                multus             Add eth0 [172.16.19.130/23] from ovn-kubernetes
-  Normal   Pulled          24s (x3 over 39s)  kubelet            Container image "registry.dev.sbiepay.sbi:8443/library/busybox:v1" already present on machine
-  Normal   Created         24s (x3 over 38s)  kubelet            Created container telnet-server
-  Normal   Started         24s (x3 over 38s)  kubelet            Started container telnet-server
-  Warning  BackOff         9s (x6 over 36s)   kubelet            Back-off restarting failed container telnet-server in pod telnet-server-89cdb6cd-tvmvg_devops-admin(e282811d-455c-473c-a5fe-3ddcb4cf31a0)
-[osuser@bastion ~]$ oc get po
-NAME                           READY   STATUS             RESTARTS      AGE
-telnet-server-89cdb6cd-tvmvg   0/1     CrashLoopBackOff   5 (21s ago)   3m12s
-[osuser@bastion ~]$
-
-
-
-
-
-FROM registry.access.redhat.com/ubi9/ubi-minimal
-RUN microdnf install -y xinetd telnet-server && microdnf clean all
-
-COPY telnetd.conf /etc/xinetd.d/telnet
-COPY xinetd.conf /etc/xinetd.conf
-
-EXPOSE 2323
-CMD ["/usr/sbin/xinetd", "-stayalive", "-dontfork"]
-
-
-
-
- vi Dockerfile
-[osuser@bastion Suraj]$ podman build -t registry.dev.sbiepay.sbi:8443/library/busybox:v2 .
-STEP 1/6: FROM registry.access.redhat.com/ubi9/ubi-minimal
-Trying to pull registry.access.redhat.com/ubi9/ubi-minimal:latest...
-Error: creating build container: initializing source docker://registry.access.redhat.com/ubi9/ubi-minimal:latest: pinging container registry registry.access.redhat.com: Get "https://registry.access.redhat.com/v2/": dial tcp: lookup registry.access.redhat.com on 10.189.53.150:53: no such host
-\
-
-\
-
-
-
-[osuser@bastion Suraj]$ vi Dockerfile
-[osuser@bastion Suraj]$ podman build -t registry.dev.sbiepay.sbi:8443/library/busybox:v2 .
-STEP 1/6: FROM registry.dev.sbiepay.sbi:8443/library/busybox:v1
-STEP 2/6: RUN yum install -y xinetd telnet-server && yum clean all
-WARN[0000] Failed to mount subscriptions, skipping entry in /usr/share/containers/mounts.conf: getting host subscription data: failed to read subscriptions from "/usr/share/rhel/secrets": open /usr/share/rhel/secrets/redhat.repo: permission denied
-/bin/sh: yum: not found
-Error: building at STEP "RUN yum install -y xinetd telnet-server && yum clean all": while running runtime: exit status 127
-[osuser@bastion Suraj]$ apt
-bash: apt: command not found...
-Failed to search for file: /mnt/BaseOS was not found
