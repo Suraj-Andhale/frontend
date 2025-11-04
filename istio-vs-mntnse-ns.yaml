@@ -1,0 +1,25 @@
+Warning: short name "vs" could also match lower priority resource volumesnapshots.snapshot.storage.k8s.io
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.istio.io/v1beta1","kind":"VirtualService","metadata":{"annotations":{},"name":"epay-maintenance","namespace":"dev-istio-system"},"spec":{"gateways":["dev-istio-system/epay-dev-gateway"],"hosts":["dev.epay.sbi","*.dev.epay.sbi"],"http":[{"route":[{"destination":{"host":"maintenancefe-maintenance-frontend.dev-frontend.svc.cluster.local","port":{"number":8080}}}]}]}}
+  creationTimestamp: "2025-10-27T14:18:10Z"
+  generation: 1
+  name: epay-maintenance
+  namespace: dev-istio-system
+  resourceVersion: "478567065"
+  uid: 83991fce-d43a-4736-8cca-f385a9ba8405
+spec:
+  gateways:
+  - dev-istio-system/epay-dev-gateway
+  hosts:
+  - dev.epay.sbi
+  - '*.dev.epay.sbi'
+  http:
+  - route:
+    - destination:
+        host: maintenancefe-maintenance-frontend.dev-frontend.svc.cluster.local
+        port:
+          number: 8080
