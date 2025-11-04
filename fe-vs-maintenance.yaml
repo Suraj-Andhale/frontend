@@ -1,0 +1,30 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.istio.io/v1beta1","kind":"VirtualService","metadata":{"annotations":{"meta.helm.sh/release-name":"transactionfe","meta.helm.sh/release-namespace":"dev-frontend"},"creationTimestamp":"2025-10-19T08:57:07Z","generation":1,"labels":{"app.kubernetes.io/managed-by":"Helm"},"name":"frontend-transactionfe","namespace":"dev-frontend","resourceVersion":"468306011","uid":"fa40573a-01be-4581-8d53-aaa50ef89e43"},"spec":{"gateways":["dev-istio-system/epay-dev-gateway"],"hosts":["dev.epay.sbi"],"http":[{"match":[{"uri":{"prefix":"/ui/"}}],"route":[{"destination":{"host":"transactionfe-transaction-frontend","port":{"number":8080}}}]}]}}
+    meta.helm.sh/release-name: transactionfe
+    meta.helm.sh/release-namespace: dev-frontend
+  creationTimestamp: "2025-10-30T15:20:51Z"
+  generation: 1
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  name: frontend-transactionfe
+  namespace: dev-frontend
+  resourceVersion: "482371486"
+  uid: c06ea1ed-0a11-4fea-84d9-a4a33470bc10
+spec:
+  gateways:
+  - dev-istio-system/epay-dev-gateway
+  hosts:
+  - dev.epay.sbi
+  http:
+  - match:
+    - uri:
+        prefix: /ui/
+    route:
+    - destination:
+        host: transactionfe-transaction-frontend
+        port:
+          number: 8080
