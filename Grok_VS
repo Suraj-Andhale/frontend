@@ -1,0 +1,30 @@
+# =============================================
+# ONE-CLICK MAINTENANCE MODE - APPLY AND FORGET
+# =============================================
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: zzz-global-maintenance-override
+  namespace: dev-istio-system
+  annotations:
+    description: "HIGHEST PRIORITY - catches everything when maintenance mode is ON"
+spec:
+  gateways:
+  - epay-dev-gateway
+  hosts:
+  - dev.epay.sbi
+  - "*.dev.epay.sbi"
+  http:
+  - name: "FORCE MAINTENANCE - HIGHEST PRIORITY"
+    match:
+    - uri:
+        prefix: "/"
+    fault:
+      abort:
+        httpStatus: 503
+        percentage: 100
+    route:
+    - destination:
+        host: maintenancefe-maintenance-frontend.dev-frontend.svc.cluster.local
+        port:
+          number: 8080
