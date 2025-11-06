@@ -1,13 +1,9 @@
-# =============================================
-# ONE-CLICK MAINTENANCE MODE - APPLY AND FORGET
-# =============================================
+# File: global-maintenance-on.yaml   (just apply this ONE file)
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: zzz-global-maintenance-override
+  name: zzz-force-maintenance-global
   namespace: dev-istio-system
-  annotations:
-    description: "HIGHEST PRIORITY - catches everything when maintenance mode is ON"
 spec:
   gateways:
   - epay-dev-gateway
@@ -15,21 +11,21 @@ spec:
   - dev.epay.sbi
   - "*.dev.epay.sbi"
   http:
-  - name: "FORCE MAINTENANCE - HIGHEST PRIORITY"
+  - name: "FORCE MAINTENANCE - CATCH EVERYTHING"
     match:
     - uri:
         prefix: "/"
     fault:
       abort:
         httpStatus: 503
-        percentage: 100
+        # CORRECT SYNTAX — this is what OpenShift/Istio expects
+        percentage:
+          value: 100
     route:
     - destination:
         host: maintenancefe-maintenance-frontend.dev-frontend.svc.cluster.local
         port:
           number: 8080
-
-
 
 
 
