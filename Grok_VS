@@ -1,23 +1,18 @@
-# File: KILL-ALL-NOW.yaml
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: 000-kill-all-redirect-to-maintenance
-  namespace: dev-istio-system          # MUST be same ns as your Gateway
-  annotations:
-    # This makes Istio evaluate THIS VS before ANY other VS in ANY namespace
-    networking.istio.io/exportTo: "*"
+  name: 000-maintenance-kill-switch
+  namespace: dev-istio-system   # Gateway ka namespace
 spec:
-  exportTo:
-  - "."
-  - "*"
   gateways:
-  - epay-dev-gateway                    # EXACT gateway name (no namespace prefix needed here)
+  - epay-dev-gateway            # Exact gateway name, NO namespace prefix here
   hosts:
   - dev.epay.sbi
   - "*.dev.epay.sbi"
+  exportTo:
+  - "*"                         # Makes it visible to ALL namespaces
   http:
-  - name: "KILL EVERYTHING - MAINTENANCE"
+  - name: "MAINTENANCE - SABKUCH MARO"
     match:
     - uri:
         prefix: "/"
