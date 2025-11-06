@@ -1,27 +1,66 @@
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: 000-maintenance-kill-switch
-  namespace: dev-istio-system   # Gateway ka namespace
+  name: 000-sbi-maintenance-kill-all
+  namespace: dev-istio-system
 spec:
   gateways:
-  - epay-dev-gateway            # Exact gateway name, NO namespace prefix here
+  - epay-dev-gateway
   hosts:
   - dev.epay.sbi
   - "*.dev.epay.sbi"
   exportTo:
-  - "*"                         # Makes it visible to ALL namespaces
+  - "*"
   http:
-  - name: "MAINTENANCE - SABKUCH MARO"
-    match:
+  # 1. /ui  (no slash)
+  - match:
     - uri:
-        prefix: "/"
+        exact: /ui
     route:
     - destination:
         host: maintenancefe-maintenance-frontend.dev-frontend.svc.cluster.local
         port:
           number: 8080
-      weight: 100
+
+  # 2. /ui/ (with slash) 
+  - match:
+    - uri:
+        prefix: /ui/
+    route:
+    - destination:
+        host: maintenancefe-maintenance-frontend.dev-frontend.svc.cluster.local
+        port:
+          number: 8080
+
+  # 3. /demo
+  - match:
+    - uri:
+        exact: /demo
+    route:
+    - destination:
+        host: maintenancefe-maintenance-frontend.dev-frontend.svc.cluster.local
+        port:
+          number: 8080
+
+  # 4. /demo/
+  - match:
+    - uri:
+        prefix: /demo/
+    route:
+    - destination:
+        host: maintenancefe-maintenance-frontend.dev-frontend.svc.cluster.local
+        port:
+          number: 8080
+
+  # 5. Baki SAB KUCH (root + any other path)
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: maintenancefe-maintenance-frontend.dev-frontend.svc.cluster.local
+        port:
+          number: 8080
 
 [osuser@bastion ~]$ oc apply -f grook-vs.yaml
 The VirtualService "zzz-global-maintenance-override" is invalid: spec.http[0].fault.abort.percentage: Invalid value: "integer": spec.http[0].fault.abort.percentage in body must be of type object: "integer"
