@@ -69,3 +69,11 @@ The VirtualService "zzz-global-maintenance-override" is invalid: spec.http[0].fa
 
 [osuser@bastion ~]$ oc apply -f grook-vs.yaml
 Error from server: error when creating "grook-vs.yaml": admission webhook "rev.validation.istio.io" denied the request: configuration is invalid: cannot have both public (*) and non-public exportTo values for a resource
+
+
+
+
+
+
+
+https://teams.microsoft.com/l/meetup-join/19%3ameeting_MTZkMTFhNTMtZWFiMy00MTM1LTk1YTYtMmNjNGI3MjZkM2U3%40thread.v2/0?context=%7b%22Tid%22%3a%22fbdb2235-7f50-4509-b407-c58325ec27a8%22%2c%22Oid%22%3a%223aca8f16-6e14-4d04-96f7-c4680458f4cc%22%7d
