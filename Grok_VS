@@ -1,23 +1,23 @@
-# File: NUCLEAR-MAINTENANCE-ON.yaml
-# Apply this → EVERYTHING dies instantly and shows maintenance page
+# File: KILL-ALL-NOW.yaml
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: 000-nuclear-maintenance-override
-  namespace: dev-istio-system
+  name: 000-kill-all-redirect-to-maintenance
+  namespace: dev-istio-system          # MUST be same ns as your Gateway
   annotations:
-    # This forces Istio to evaluate this VS FIRST
+    # This makes Istio evaluate THIS VS before ANY other VS in ANY namespace
     networking.istio.io/exportTo: "*"
 spec:
+  exportTo:
+  - "."
+  - "*"
   gateways:
-  - epay-dev-gateway
+  - epay-dev-gateway                    # EXACT gateway name (no namespace prefix needed here)
   hosts:
   - dev.epay.sbi
   - "*.dev.epay.sbi"
-  exportTo:
-  - "*"
   http:
-  - name: "NUCLEAR MAINTENANCE - KILLS EVERYTHING"
+  - name: "KILL EVERYTHING - MAINTENANCE"
     match:
     - uri:
         prefix: "/"
@@ -26,7 +26,7 @@ spec:
         host: maintenancefe-maintenance-frontend.dev-frontend.svc.cluster.local
         port:
           number: 8080
-
+      weight: 100
 
 [osuser@bastion ~]$ oc apply -f grook-vs.yaml
 The VirtualService "zzz-global-maintenance-override" is invalid: spec.http[0].fault.abort.percentage: Invalid value: "integer": spec.http[0].fault.abort.percentage in body must be of type object: "integer"
