@@ -30,3 +30,8 @@ spec:
 
 [osuser@bastion ~]$ oc apply -f grook-vs.yaml
 The VirtualService "zzz-global-maintenance-override" is invalid: spec.http[0].fault.abort.percentage: Invalid value: "integer": spec.http[0].fault.abort.percentage in body must be of type object: "integer"
+
+
+
+[osuser@bastion ~]$ oc apply -f grook-vs.yaml
+Error from server: error when creating "grook-vs.yaml": admission webhook "rev.validation.istio.io" denied the request: configuration is invalid: cannot have both public (*) and non-public exportTo values for a resource
