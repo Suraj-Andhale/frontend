@@ -1,32 +1,31 @@
-# File: global-maintenance-on.yaml   (just apply this ONE file)
+# File: NUCLEAR-MAINTENANCE-ON.yaml
+# Apply this → EVERYTHING dies instantly and shows maintenance page
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: zzz-force-maintenance-global
+  name: 000-nuclear-maintenance-override
   namespace: dev-istio-system
+  annotations:
+    # This forces Istio to evaluate this VS FIRST
+    networking.istio.io/exportTo: "*"
 spec:
   gateways:
   - epay-dev-gateway
   hosts:
   - dev.epay.sbi
   - "*.dev.epay.sbi"
+  exportTo:
+  - "*"
   http:
-  - name: "FORCE MAINTENANCE - CATCH EVERYTHING"
+  - name: "NUCLEAR MAINTENANCE - KILLS EVERYTHING"
     match:
     - uri:
         prefix: "/"
-    fault:
-      abort:
-        httpStatus: 503
-        # CORRECT SYNTAX — this is what OpenShift/Istio expects
-        percentage:
-          value: 100
     route:
     - destination:
         host: maintenancefe-maintenance-frontend.dev-frontend.svc.cluster.local
         port:
           number: 8080
-
 
 
 [osuser@bastion ~]$ oc apply -f grook-vs.yaml
