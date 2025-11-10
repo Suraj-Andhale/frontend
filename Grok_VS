@@ -65,3 +65,54 @@ During the maintenance period keep the following Virtual Service only that will 
 
 
 
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: <vs-name>
+  namespace: dev-frontend
+spec:
+  gateways:
+  - dev-istio-system/epay-dev-gateway
+  hosts:
+  - dev.epay.sbi
+  http:
+  - match:
+    - uri:
+        prefix: /merchantintegration/
+    route:
+    - destination:
+        host: integration
+        port:
+          number: 8080
+  - match:
+    - uri:
+        prefix: /maintenance
+    route:
+    - destination:
+        host: maintenancefe-maintenance-frontend
+        port:
+          number: 8080     
+  - match:
+    - uri:
+        prefix: /ui/
+    route:
+    - destination:
+        host: transactionfe-transaction-frontend
+        port:
+          number: 8080
+  - match:
+    - uri:
+        prefix: /merchantpanel
+    route:
+    - destination:
+        host: merchantfe-merchant-frontend
+        port:
+          number: 8080
+  - match:
+    - uri:
+        prefix: /transactiontracking
+    route:
+    - destination:
+        host: websitefe-epay-website
+        port:
+          number: 8080 
