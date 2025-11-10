@@ -37,3 +37,31 @@ Error from server: error when creating "grook-vs.yaml": admission webhook "rev.v
 
 
 https://teams.microsoft.com/l/meetup-join/19%3ameeting_MTZkMTFhNTMtZWFiMy00MTM1LTk1YTYtMmNjNGI3MjZkM2U3%40thread.v2/0?context=%7b%22Tid%22%3a%22fbdb2235-7f50-4509-b407-c58325ec27a8%22%2c%22Oid%22%3a%223aca8f16-6e14-4d04-96f7-c4680458f4cc%22%7d
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+The Virtual Service is correct but there is one problem when we put the whole configuration together. The routing rules for this host dev.epay.sbi is not defined in a single Virtual Service and we cannot determine their order of precedence, ideally, when they are defined in a single file they are evaluated in sequential order from top to bottom.
+
+Given the above configuration (5 VSs in dev-frontend NS + the VS in dev-istio-system), when a client access the application --> https://dev.epay.sbi/transactiontracking the request is forwarded to websitefe-epay-website svc as the matching rule is more specific and taking more precedence over what is defined in the VS in dev-istio-system for routing the request to maintenancefe-maintenance-frontend.dev-frontend.svc.cluster.local svc.
+
+Suggestion
+
+Delete all the Virtual Services in dev-frontend that are defining the host dev.epay.sbi individually.
+Merge all the Virtual service that are defining the same host in a single file.[2]
+During the maintenance period keep the following Virtual Service only that will route the traffic to the maintenance service.
+
+
+
+
