@@ -116,3 +116,30 @@ spec:
         host: websitefe-epay-website
         port:
           number: 8080 
+
+
+
+
+
+
+
+
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: <vs-name>
+  namespace: dev-frontend
+spec:
+  gateways:
+  - dev-istio-system/epay-dev-gateway
+  hosts:
+  - dev.epay.sbi
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: maintenancefe-maintenance-frontend.dev-frontend.svc.cluster.local
+        port:
+          number: 8080
