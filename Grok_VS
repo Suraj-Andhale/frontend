@@ -142,4 +142,218 @@ spec:
     - destination:
         host: maintenancefe-maintenance-frontend.dev-frontend.svc.cluster.local
         port:
+
+
+
+
+
+Perfect.
+I now have everything needed to generate complete, polished, enterprise-grade responses for all questions shown in your screenshot — tailored to:
+
+GitLab CI/CD
+
+GitFlow (dev → SIT → UAT → pre-prod → prod → DR/DC)
+
+Helm charts
+
+OpenShift (RHOCP)
+
+Quay registry
+
+Manual vulnerability remediation
+
+Local conflict resolution
+
+Helm rollback + previous image tags
+
+
+
+---
+
+✅ Final Answers to All Questionnaire Items (Clean, Professional, Ready to Submit)
+
+Below are the answers to the exact questions visible in your screenshot.
+
+
+---
+
+1. Are there any existing branch protection rules, naming conventions, or merge policies?
+
+Yes.
+We have branch protection enabled particularly for the master/main, pre-prod, and prod branches. Protected branches require:
+
+Mandatory Merge Requests (MRs)
+
+Successful pipeline execution before merge
+
+No direct push access
+
+Approval from designated reviewers (based on environment)
+
+
+All functional development follows a structured GitFlow branching model using environment-specific branches (dev → SIT → UAT → pre-prod → prod) with clear naming conventions for feature, bugfix, and hotfix branches.
+
+
+---
+
+2. What is your current branching strategy? Please explain in detail.
+
+We follow a GitFlow-inspired environment-based branching strategy:
+
+dev branch → primary integration branch for development
+
+sit branch → used for system integration testing
+
+uat branch → user acceptance testing environment
+
+pre-prod branch → staging environment before production
+
+prod branch → production-ready, protected branch
+
+
+Additionally:
+
+Pre-prod and prod have DR (Disaster Recovery) and DC (Data Center) setups.
+
+All merges between branches occur strictly via Merge Requests.
+
+Feature branches follow the naming convention:
+feature/<task-id> or bugfix/<ticket-id>
+
+
+
+---
+
+3. Do you currently use any artifacts or dependency management tools?
+
+Yes.
+We use RedHat Quay as our artifact container registry:
+
+Stores container images used by GitLab pipelines
+
+Stores versioned images for rollback and release tracking
+
+Integrated with Helm chart deployments
+
+
+Dependency management is handled through the application language’s package manager (e.g., npm, pip, Maven, etc.) within CI jobs.
+
+
+---
+
+4. Which tools are currently integrated with your repositories (e.g., Jira, Jenkins, SonarQube, Slack, Nexus)?
+
+No external tools are currently integrated.
+All workflow management, CI/CD, and issue tracking is handled natively within GitLab.
+
+
+---
+
+5. Are there any specific milestones, issues, or merge requests that need to be migrated?
+
+No migrations are currently needed.
+We actively track tasks, bugs, and enhancements using GitLab Issues, and merge requests are tied directly to their corresponding issue references.
+
+
+---
+
+6. What is the process to resolve conflicts in source code?
+
+Merge conflicts are resolved locally by developers using Git on their workstation.
+After fixing and validating locally, the updated code is pushed to the feature branch and re-submitted through the MR for review and merge.
+
+
+---
+
+7. How many jobs, stages, and scripts are currently used in the current tool?
+
+Our GitLab CI/CD pipeline uses the following stages:
+
+1. .pre
+
+
+2. build
+
+
+3. test
+
+
+4. sast
+
+
+5. hp-fortify
+
+
+6. release
+
+
+7. dockerbuild
+
+
+8. deploy
+
+deployment
+
+commit
+
+validate
+
+deploy
+
+verify
+
+
+
+
+This pipeline builds the application, performs static code analysis, builds the Docker image, pushes it to Quay, and then deploys it to OpenShift via Helm.
+
+
+---
+
+8. What is your process for remediating vulnerabilities once identified?
+
+Currently, vulnerability reports (SAST, dependency scanning, Fortify, container security) are:
+
+Reviewed by the development team
+
+Fixed manually based on priority and severity
+
+Re-tested in subsequent pipeline runs
+
+
+No automated blocking is configured yet, but vulnerabilities are actively addressed during development cycles.
+
+
+---
+
+9. What are your rollback mechanisms?
+
+We use multiple complementary rollback methods:
+
+Helm upgrade with --atomic
+Ensures failed Helm upgrades automatically roll back to the last stable release.
+
+Helm release history
+Helm maintains release records, allowing us to run:
+helm rollback <release> <revision>
+
+Previous image tags
+We maintain versioned image tags in Quay, allowing us to re-run previous GitLab pipelines or redeploy older images.
+
+
+These combined methods provide reliable rollback for OpenShift workloads.
+
+
+---
+
+🎉 All questionnaire answers are now complete.
+
+If you want, I can also prepare:
+
+✅ A professional PDF/Doc version of these answers
+✅ A CI/CD architecture diagram (GitLab → Quay → Helm → RHOCP)
+✅ A rollback workflow diagram
+✅ A GitLab CI template for your environment
+
+Just tell me which format you need.
           number: 8080
