@@ -46,3 +46,137 @@ targets:
     deployments:
       - ops-operationsservice
       - refund-refundservice
+
+
+
+
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: global-scaler-{{ .Values.mode }}-{{ now | date "20060102150405" }}
+  namespace: {{ (index .Values.targets 0).namespace | default "default" }}
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      restartPolicy: Never
+      containers:
+        - name: scaler
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              set -euo pipefail
+
+              echo "Scaler mode: {{ .Values.mode }}"
+
+              if [[ "{{ .Values.mode }}" == "down" ]]; then
+                REPLICAS=0
+                AUTOSCALE=false
+              else
+                REPLICAS=1
+                AUTOSCALE=true
+              fi
+
+              echo "Target replicas=$REPLICAS autoscale=$AUTOSCALE"
+
+              # ensure oc exists (or use kubectl if installed in image)
+              command -v oc >/dev/null 2>&1 || { echo "oc not found in image"; exit 1; }
+
+              {{- range .Values.targets }}
+              echo ""
+              echo ">>> Namespace: {{ .namespace }}"
+              oc project {{ .namespace }}
+
+              {{- range .deployments }}
+              echo "  - Scaling deployment {{ . }} -> $REPLICAS"
+              oc scale deploy "{{ . }}" -n "{{ $.namespace }}" --replicas=$REPLICAS || true
+
+              # handle HPA if exists
+              if oc get hpa "{{ . }}" -n "{{ $.namespace }}" >/dev/null 2>&1; then
+                echo "    HPA found for {{ . }} -> patching minReplicas=$REPLICAS"
+                oc patch hpa "{{ . }}" -n "{{ $.namespace }}" -p "{\"spec\":{\"minReplicas\":$REPLICAS}}"
+              else
+                echo "    No HPA for {{ . }}"
+              fi
+              {{- end }}
+              {{- end }}
+
+              echo ""
+              echo "Scaling completed."
+
+
+
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.serviceAccountName }}
+  namespace: {{ (index .Values.targets 0).namespace | default "default" }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: global-scaler-role
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "patch", "update"]
+  - apiGroups: ["autoscaling"]
+    resources: ["horizontalpodautoscalers"]
+    verbs: ["get", "list", "patch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: global-scaler-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: global-scaler-role
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.serviceAccountName }}
+    namespace: {{ (index .Values.targets 0).namespace | default "default" }}
+--------------------------------------------------------------------------------------------------------------------------
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.serviceAccountName }}
+  namespace: {{ (index .Values.targets 0).namespace | default "default" }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: global-scaler-role
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "patch", "update"]
+  - apiGroups: ["autoscaling"]
+    resources: ["horizontalpodautoscalers"]
+    verbs: ["get", "list", "patch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: global-scaler-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: global-scaler-role
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.serviceAccountName }}
+    namespace: {{ (index .Values.targets 0).namespace | default "default" }}
