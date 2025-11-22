@@ -1,0 +1,48 @@
+mode: down          # "down" -> replicas=0 HPA off, "up" -> replicas=1 HPA on
+
+# image that has oc/kubectl installed (you probably already have this in your CI registry)
+image:
+  repository: registry.dev.sbiepay.sbi:8443/ubi9/ochelm
+  tag: "03122024"
+  pullPolicy: IfNotPresent
+
+serviceAccountName: global-scaler-sa
+
+targets:
+  - namespace: prod-dc-admin
+    deployments:
+      - admin-adminservice
+
+  - namespace: prod-dc-frontend
+    deployments:
+      - transactionfe-transaction-frontend
+      - merchantfe-merchant-frontend
+
+  - namespace: prod-dc-kms
+    deployments:
+      - kms-kmsservice
+
+  - namespace: prod-dc-simulators
+    deployments:
+      - demo-merchantsimulator
+      - javasimulator-javautilityapisimulator
+      - orderhash
+
+  - namespace: prod-dc-transaction
+    deployments:
+      - payment-paymentservice
+      - txn-transactionservice
+
+  - namespace: prod-dc-merchant
+    deployments:
+      - merchant-merchantservice
+      - report-reportservice
+
+  - namespace: prod-dc-notification
+    deployments:
+      - notify-notificationservice
+
+  - namespace: prod-dc-rns
+    deployments:
+      - ops-operationsservice
+      - refund-refundservice
